@@ -53,7 +53,8 @@ Always adhere to the settings defined in `.gitattributes` for proper file handli
 
 ## Git Workflow
 
-- We always use rebase when we need to fast forward our branch (that isn't main)
+- We always use rebase when we need to fast-forward our branch (that isn't main)
+- Before pushing a new branch to GitHub, please ensure it is fast-forwarded to the tip of main.
 
 ## Testing
 
