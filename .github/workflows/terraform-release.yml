@@ -1,0 +1,36 @@
+name: Terraform Release
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.github/workflows/terraform-release.yml'
+      # Don't trigger on README updates from terraform-docs
+      - '!README.md'
+    tags-ignore:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      default_bump:
+        description: 'Default version bump if none specified (major, minor, patch)'
+        required: false
+        default: 'minor'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    name: Create Terraform Release
+    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-release.yml@main
+    with:
+      working-directory: '.'
+      default-bump: ${{ github.event.inputs.default_bump || 'minor' }}
+      # The centralized workflow automatically handles the following scenarios:
+      # - Commits with "feat!" or "BREAKING CHANGE" in title/body will trigger major bump
+      # - Commits with "feat" type will trigger minor bump if default is not overridden
+      # - Commits with "fix" type will trigger patch bump if default is not overridden
