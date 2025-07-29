@@ -65,14 +65,3 @@ locals {
 
 <!-- BEGIN_TF_DOCS -->
 <!-- END_TF_DOCS -->
-
-## Manual Outputs Reference
-
-| Name | Description |
-|------|-------------|
-| to_display_name | Map of Azure region codes to their display names |
-| to_fixed | Map of Azure region codes to shortest possible identifiers |
-| to_short | Map of Azure region codes to short identifiers (slightly more descriptive than fixed) |
-| from_fixed | Map of fixed identifiers back to Azure region codes |
-| from_short | Map of short identifiers back to Azure region codes |
-| regions | Complete list of available Azure regions |
