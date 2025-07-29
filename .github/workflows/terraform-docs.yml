@@ -1,0 +1,20 @@
+name: Terraform Docs
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.terraform-docs.yml'
+
+jobs:
+  terraform-docs:
+    name: Update Terraform Docs
+    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-docs.yml@main
+    with:
+      working-directory: '.'
+      output-file: 'README.md'
+      output-method: 'inject'
+      git-push: true
+      config-file: '.terraform-docs.yml'
