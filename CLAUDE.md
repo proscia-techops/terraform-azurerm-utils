@@ -6,6 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Terraform utility module for Azure (`azurerm` provider) that aims to provide region mapping utilities similar to those in the [terraform-aws-utils](https://github.com/cloudposse/terraform-aws-utils) module.
 
+## Central Workflows Repository
+
+This repository uses workflows from the centralized GitHub Actions workflows repository:
+- Repository: `proscia-techops/github-actions-workflows`
+- URL: https://github.com/proscia-techops/github-actions-workflows
+
+The central repository contains reusable workflows for:
+- Terraform testing (AWS, Azure, and provider-agnostic)
+- Terraform documentation generation
+- Terraform release management with semantic versioning
+- Other CI/CD processes
+
+When suggesting workflow changes, consider whether they should be made to the central repository instead of duplicating functionality.
+
 ## Coding Standards
 
 ### Commit Messages
@@ -36,6 +50,10 @@ Always follow the rules defined in the `.editorconfig` file. This ensures consis
 ### File Formatting
 
 Always adhere to the settings defined in `.gitattributes` for proper file handling, especially line endings and binary files.
+
+## Git Workflow
+
+- We always use rebase when we need to fast forward our branch (that isn't main)
 
 ## Testing
 
