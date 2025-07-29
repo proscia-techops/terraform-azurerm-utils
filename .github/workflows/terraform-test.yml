@@ -10,5 +10,3 @@ jobs:
   test:
     name: Run Terraform Tests
     uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-test-null.yml@main
-    with:
-      terraform-version: "1.4.0" # Use a specific version if needed, or remove this line to use the latest
