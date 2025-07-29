@@ -1,6 +1,12 @@
 name: Terraform Docs
 
 on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.terraform-docs.yml'
   pull_request:
     branches: [ main ]
     paths:
