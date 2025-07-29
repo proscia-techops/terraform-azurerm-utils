@@ -61,7 +61,12 @@ locals {
 }
 ```
 
-## Outputs
+## Requirements
+
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->
+
+## Manual Outputs Reference
 
 | Name | Description |
 |------|-------------|

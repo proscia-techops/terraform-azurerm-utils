@@ -1,0 +1,26 @@
+formatter: markdown table
+
+sections:
+  hide:
+    - header
+    - providers
+
+settings:
+  anchor: false
+  color: true
+  default: true
+  escape: false
+  indent: 2
+  required: true
+  sensitive: true
+  type: true
+
+sort:
+  enabled: true
+  by: name
+
+output:
+  file: README.md
+  mode: inject
+  template: |-
+    {{ .Content }}
