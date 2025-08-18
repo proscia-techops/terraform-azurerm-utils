@@ -13,15 +13,16 @@ on:
       - 'v*.*.*'
   workflow_dispatch:
     inputs:
-      default_bump:
-        description: 'Default version bump if none specified (major, minor, patch)'
+      force_version:
+        description: 'Force specific version (leave empty for auto versioning)'
         required: false
-        default: 'minor'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+        default: ''
+        type: string
+      dry_run:
+        description: 'Dry run (no actual release)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   release:
@@ -29,8 +30,9 @@ jobs:
     uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-release.yml@main
     with:
       working-directory: '.'
-      default-bump: ${{ github.event.inputs.default_bump || 'minor' }}
-      # The centralized workflow automatically handles the following scenarios:
+      force_version: ${{ github.event.inputs.force_version || '' }}
+      dry_run: ${{ github.event.inputs.dry_run || false }}
+      # The centralized workflow automatically handles semantic versioning:
       # - Commits with "feat!" or "BREAKING CHANGE" in title/body will trigger major bump
-      # - Commits with "feat" type will trigger minor bump if default is not overridden
-      # - Commits with "fix" type will trigger patch bump if default is not overridden
+      # - Commits with "feat" type will trigger minor bump
+      # - Commits with "fix" type will trigger patch bump
