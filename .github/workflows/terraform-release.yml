@@ -30,8 +30,8 @@ jobs:
     uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-release.yml@main
     with:
       working-directory: '.'
-      force_version: ${{ inputs.force_version }}
-      dry_run: ${{ inputs.dry_run }}
+      force_version: ${{ github.event.inputs.force_version || '' }}
+      dry_run: ${{ fromJSON(github.event.inputs.dry_run || 'false') }}
       # The centralized workflow automatically handles semantic versioning:
       # - Commits with "feat!" or "BREAKING CHANGE" in title/body will trigger major bump
       # - Commits with "feat" type will trigger minor bump
