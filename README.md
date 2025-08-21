@@ -64,4 +64,37 @@ locals {
 ## Requirements
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 1.11.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| api_to_display | API Style to Display Name mapping |
+| api_to_fixed | API Style to Fixed mapping |
+| api_to_short | API Style to Short mapping |
+| display_to_api | Display Name to API Style mapping |
+| display_to_fixed | Display Name to Fixed mapping |
+| display_to_short | Display Name to Short mapping |
+| fixed_to_api | Fixed to API Style mapping |
+| fixed_to_display | Fixed to Display Name mapping |
+| regions | Complete list of available Azure regions |
+| short_to_api | Short to API Style mapping |
+| short_to_display | Short to Display Name mapping |
 <!-- END_TF_DOCS -->
