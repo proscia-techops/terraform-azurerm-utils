@@ -9,4 +9,9 @@ on:
 jobs:
   test:
     name: Run Terraform Tests
-    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-test-null.yml@main
+    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-test.yml@main
+    with:
+      working-directory: '.'
+      provider: 'none'
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
