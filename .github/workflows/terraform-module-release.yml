@@ -1,0 +1,13 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  terraform-module-release:
+    name: Release Terraform Module
+    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-module-release.yml@main
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,22 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  terraform-module-test:
+    name: Test Terraform Module
+    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-module-test.yml@main
+    with:
+      provider: 'azure'
+      azure-client-id: ${{ vars.AZURE_TEST_CLIENT_ID }}
+      azure-subscription-id: ${{ vars.AZURE_TEST_SUBSCRIPTION_ID }}
+      azure-tenant-id: ${{ vars.AZURE_TEST_TENANT_ID }}
+      unit-test-directory: 'tests/unit'
+      e2e-test-directory: 'tests/e2e'
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_TEST_SECRET_VALUE }}
