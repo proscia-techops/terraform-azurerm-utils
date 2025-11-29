@@ -57,8 +57,8 @@ run "api_to_fixed_assertions" {
     error_message = "API to Fixed mapping for eastus should be ue1 (USA East 1)"
   }
   assert {
-    condition     = output.api_to_fixed["westus"] == "uw2"
-    error_message = "API to Fixed mapping for westus should be uw2 (USA West 2)"
+    condition     = output.api_to_fixed["westus"] == "uw1"
+    error_message = "API to Fixed mapping for westus should be uw1 (USA West 1)"
   }
   assert {
     condition     = output.api_to_fixed["centralus"] == "uc1"
@@ -107,8 +107,8 @@ run "api_to_short_assertions" {
     error_message = "API to Short mapping for eastus should be use1 (USA East 1)"
   }
   assert {
-    condition     = output.api_to_short["westus"] == "usw2"
-    error_message = "API to Short mapping for westus should be usw2 (USA West 2)"
+    condition     = output.api_to_short["westus"] == "usw1"
+    error_message = "API to Short mapping for westus should be usw1 (USA West 1)"
   }
   assert {
     condition     = output.api_to_short["centralus"] == "usc1"
@@ -141,8 +141,8 @@ run "reverse_mappings_assertions" {
     error_message = "Fixed to API mapping for ue1 is incorrect"
   }
   assert {
-    condition     = output.fixed_to_api["uw2"] == "westus"
-    error_message = "Fixed to API mapping for uw2 is incorrect"
+    condition     = output.fixed_to_api["uw1"] == "westus"
+    error_message = "Fixed to API mapping for uw1 is incorrect"
   }
   assert {
     condition     = output.fixed_to_api["ew1"] == "westeurope"
@@ -155,8 +155,8 @@ run "reverse_mappings_assertions" {
     error_message = "Short to API mapping for use1 is incorrect"
   }
   assert {
-    condition     = output.short_to_api["usw2"] == "westus"
-    error_message = "Short to API mapping for usw2 is incorrect"
+    condition     = output.short_to_api["usw1"] == "westus"
+    error_message = "Short to API mapping for usw1 is incorrect"
   }
   assert {
     condition     = output.short_to_api["euw1"] == "westeurope"
