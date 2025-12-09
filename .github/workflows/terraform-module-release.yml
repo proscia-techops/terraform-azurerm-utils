@@ -10,9 +10,144 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
-  terraform-module-release:
-    name: Release Terraform Module
-    uses: proscia-techops/github-actions-workflows/.github/workflows/terraform-module-release.yml@main
-    with:
-      force-version: ${{ inputs.force-version || '' }}
+  semantic-release:
+    name: Semantic Release with Uplift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Uplift
+        if: inputs.force-version == ''
+        uses: gembaadvantage/uplift-action@v2
+        with:
+          install-only: true
+          args: --version
+
+      - name: Determine Next Version with Uplift
+        id: version
+        if: inputs.force-version == ''
+        run: |
+          # Run uplift and capture output
+          output=$(uplift tag --dry-run --no-prefix --next 2>&1 || true)
+          echo "$output"
+
+          # Extract version from "identified next semantic version version=X.Y.Z" format
+          version=$(echo "$output" | grep "identified next semantic version" | sed -n 's/.*version=\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
+
+          if [ -n "$version" ]; then
+            echo "Detected next version: $version"
+            echo "version=$version" >> $GITHUB_OUTPUT
+          else
+            echo "No version detected from uplift output"
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for New Release
+        id: check
+        run: |
+          if [ -n "${{ inputs.force-version }}" ]; then
+            echo "Manual version specified: ${{ inputs.force-version }}"
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "version=${{ inputs.force-version }}" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.version.outputs.version }}" ]; then
+            echo "New version determined: ${{ steps.version.outputs.version }}"
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "version=${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "No new version to release"
+            echo "should-release=false" >> $GITHUB_OUTPUT
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Git Tag with Uplift
+        id: uplift
+        if: steps.check.outputs.should-release == 'true'
+        uses: gembaadvantage/uplift-action@v2
+        with:
+          args: tag --no-prefix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create git-cliff config
+        if: steps.check.outputs.should-release == 'true'
+        run: |
+          cat > cliff.toml << 'EOF'
+          [changelog]
+          body = """
+          {% for group, commits in commits | group_by(attribute="group") %}
+          ### {{ group | trim }}
+          {% for commit in commits %}
+          - {{ commit.message | upper_first }}\
+          {% endfor %}
+          {% endfor %}\n
+          """
+          trim = true
+
+          [git]
+          conventional_commits = true
+          filter_unconventional = true
+          commit_parsers = [
+              { message = "^feat", group = "🚀 Features" },
+              { message = "^fix", group = "🐛 Bug Fixes" },
+              { message = "^doc", group = "📚 Documentation" },
+              { message = "^perf", group = "⚡ Performance" },
+              { message = "^refactor", group = "♻️ Refactor" },
+              { message = "^style", group = "🎨 Styling" },
+              { message = "^test", group = "🧪 Testing" },
+              { message = "^chore", group = "🔧 Miscellaneous Tasks" },
+              { message = "^ci", group = "🔧 Miscellaneous Tasks" },
+              { body = ".*security", group = "🔒 Security" },
+              { message = "^revert", group = "⏪ Revert" },
+          ]
+          filter_commits = false
+          topo_order = false
+          sort_commits = "oldest"
+          EOF
+
+      - name: Generate Release Notes with git-cliff
+        id: changelog
+        if: steps.check.outputs.should-release == 'true'
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose --latest
+
+      - name: Create Terraform Module ZIP
+        id: create_zip
+        if: steps.check.outputs.should-release == 'true'
+        run: |
+          # Get repository name from GitHub context
+          repo_name="${{ github.event.repository.name }}"
+          zip_name="${repo_name}-${{ steps.check.outputs.version }}.zip"
+
+          # Find and zip Terraform files and README, excluding .terraform/ and tests/
+          find . -name "*.tf" -o -name "README.md" | \
+            grep -v ".git" | \
+            grep -v ".terraform/" | \
+            grep -v "tests/" | \
+            zip "$zip_name" -@
+
+          echo "zip-file=$zip_name" >> $GITHUB_OUTPUT
+          echo "Created ZIP file: $zip_name"
+
+      - name: Create GitHub Release
+        id: create_release
+        if: steps.check.outputs.should-release == 'true'
+        run: |
+          gh release create "${{ steps.check.outputs.version }}" \
+            --title "${{ steps.check.outputs.version }}" \
+            --notes "${{ steps.changelog.outputs.content }}" \
+            "${{ steps.create_zip.outputs.zip-file }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
